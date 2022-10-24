@@ -1,3 +1,4 @@
+from crypt import methods
 import os
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
@@ -127,10 +128,10 @@ def update_drink(id):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks/<int:id>')
+@app.route('/drinks/<int:id>', methods=['DELETE'])
 def delete_drink(id):
     #get drink from db
-    drink = Drink.quert.filter(Drink.id == id).one_or_none()
+    drink = Drink.query.filter(Drink.id == id).one_or_none()
 
     #check if drink exist
     if not drink:
