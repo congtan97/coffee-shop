@@ -30,6 +30,7 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks')
+@requires_auth('get:drinks')
 def get_drinks():
     # get all drinks from database
     drinks = Drink.query.all()
@@ -48,6 +49,7 @@ def get_drinks():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
 def get_drinks_detail():
     # get all drinks from database
     drinks = Drink.query.all()
@@ -67,6 +69,7 @@ def get_drinks_detail():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
 def create_drink():
     body = request.get_json()
     title = body.get('title', None)
@@ -95,6 +98,7 @@ def create_drink():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
 def update_drink(id):
     #getting drink by id
     drink = Drink.query.filter(Drink.id == id).one_or_none()
@@ -129,6 +133,7 @@ def update_drink(id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:id>', methods=['DELETE'])
+@requires_auth('delete:drinks')
 def delete_drink(id):
     #get drink from db
     drink = Drink.query.filter(Drink.id == id).one_or_none()
