@@ -9,6 +9,16 @@ AUTH0_DOMAIN = 'dev-jg1rn0t0.us.auth0.com'
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'coffee-shop'
 
+## AuthError Exception
+'''
+AuthError Exception
+A standardized way to communicate auth failure modes
+'''
+class AuthError(Exception):
+    def __init__(self, error, status_code):
+        self.error = error
+        self.status_code = status_code
+
 ## Auth Header
 '''
 @TODO implement get_token_auth_header() method
