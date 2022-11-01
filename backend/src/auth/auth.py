@@ -52,16 +52,19 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    # checking if there is the permissions attribute in the JWT payload.
+    # Check if permissions not in the JWT payload
     if 'permissions' not in payload:
-        raise AuthError({'code': 'Claims cannot be verified',
-                         'description': 'Permissions not included in JWT.'}, 400)
-    # checking if the permision to perfoem a task is in the payload's permissions
+        raise AuthError({
+            'code': 'Unauthorized',
+            'description': 'Permissions not included.'
+        }, 401)
+
+    # Check if permission string is not in the payload permissions array
     if permission not in payload['permissions']:
         raise AuthError({
             'code': 'Unauthorized',
             'description': 'Permission not found.'
-        }, 403)
+        }, 401)
     return True
 '''
 @TODO implement verify_decode_jwt(token) method
@@ -74,17 +77,19 @@ def check_permissions(permission, payload):
     return the decoded payload
     !!NOTE urlopen has a common certificate error described here: https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
 '''
+
+# Reuse from base nanodegrees source code (https://github.com/udacity/FSND/blob/master/BasicFlaskAuth/app.py)
 def verify_decode_jwt(token):
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
     unverified_header = jwt.get_unverified_header(token)
     rsa_key = {}
-    # Checking if the header is valid
     if 'kid' not in unverified_header:
         raise AuthError({
-            'code': 'Header is invalid',
-            'description': 'Authorization header is incomplete.'
+            'code': 'invalid_header',
+            'description': 'Authorization malformed.'
         }, 401)
+
     for key in jwks['keys']:
         if key['kid'] == unverified_header['kid']:
             rsa_key = {
@@ -96,14 +101,22 @@ def verify_decode_jwt(token):
             }
     if rsa_key:
         try:
-            payload = jwt.decode(token, rsa_key, algorithms=ALGORITHMS,
-                                 audience=API_AUDIENCE, issuer='https://' + AUTH0_DOMAIN + '/')
+            payload = jwt.decode(
+                token,
+                rsa_key,
+                algorithms=ALGORITHMS,
+                audience=API_AUDIENCE,
+                issuer='https://' + AUTH0_DOMAIN + '/'
+            )
+
             return payload
+
         except jwt.ExpiredSignatureError:
             raise AuthError({
                 'code': 'token_expired',
                 'description': 'Token expired.'
             }, 401)
+
         except jwt.JWTClaimsError:
             raise AuthError({
                 'code': 'invalid_claims',
@@ -114,11 +127,11 @@ def verify_decode_jwt(token):
                 'code': 'invalid_header',
                 'description': 'Unable to parse authentication token.'
             }, 400)
-    else:
-        raise AuthError({
-            'code': 'invalid_header',
-            'description': 'Unable to find the appropriate key.'
-        }, 400)
+    raise AuthError({
+                'code': 'invalid_header',
+                'description': 'Unable to find the appropriate key.'
+            }, 400)
+
 '''
 @TODO implement @requires_auth(permission) decorator method
     @INPUTS
