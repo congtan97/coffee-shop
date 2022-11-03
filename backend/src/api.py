@@ -31,7 +31,7 @@ CORS(app)
 '''
 @app.route('/drinks')
 @requires_auth('get:drinks')
-def get_drinks():
+def get_drinks(payload):
     # get all drinks from database
     drinks = Drink.query.all()
     #Formatting drinks for response
@@ -50,7 +50,7 @@ def get_drinks():
 '''
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
-def get_drinks_detail():
+def get_drinks_detail(payload):
     # get all drinks from database
     drinks = Drink.query.all()
     #Formatting drinks for response
@@ -70,7 +70,7 @@ def get_drinks_detail():
 '''
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
-def create_drink():
+def create_drink(payload):
     body = request.get_json()
     title = body.get('title', None)
     recipe = body.get('recipe', None)
@@ -99,7 +99,7 @@ def create_drink():
 '''
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def update_drink(id):
+def update_drink(payload, id):
     #getting drink by id
     drink = Drink.query.filter(Drink.id == id).one_or_none()
     #check drink is exist in db
@@ -134,7 +134,7 @@ def update_drink(id):
 '''
 @app.route('/drinks/<int:id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
-def delete_drink(id):
+def delete_drink(payload, id):
     #get drink from db
     drink = Drink.query.filter(Drink.id == id).one_or_none()
 
