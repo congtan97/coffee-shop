@@ -213,4 +213,8 @@ def internal_server_error(error):
 '''
 @app.errorhandler(AuthError)
 def auth_error_handler(e):
-    return jsonify(e.to_dict()), e.status_code
+    return jsonify({
+    'success': False,
+    'error': e.status_code,
+    'message': e.error['description']
+    }), e.status_code
